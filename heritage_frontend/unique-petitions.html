@@ -134,8 +134,8 @@
 
       try {
         const [allRes, signedRes] = await Promise.all([
-          fetch("http://localhost:5000/api/petitions"),
-          fetch("http://localhost:5000/api/my-signed-petitions", {
+          fetch("https://heritage-backend-p1hv.onrender.com/api/petitions"),
+          fetch("https://heritage-backend-p1hv.onrender.com/api/my-signed-petitions", {
             headers: { Authorization: "Bearer " + token }
           })
         ]);
@@ -168,7 +168,7 @@
           const btn = div.querySelector("button");
           if (!alreadySigned) {
             btn.addEventListener("click", async () => {
-              const res = await fetch(`http://localhost:5000/api/petitions/${p.id}/sign`, {
+              const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/petitions/${p.id}/sign`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

@@ -175,7 +175,7 @@
 
     const savedToken = localStorage.getItem("heritage_token");
     if (savedToken) {
-      fetch("http://localhost:5000/api/me", {
+      fetch("https://heritage-backend-p1hv.onrender.com/api/me", {
         headers: { Authorization: "Bearer " + savedToken }
       })
       .then(res => {

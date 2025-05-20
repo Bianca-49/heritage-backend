@@ -103,7 +103,7 @@
 
     async function loadPoints() {
       try {
-        const res = await fetch("http://localhost:5000/api/points");
+        const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/points");
         const points = await res.json();
 
         const container = document.getElementById("pointsList");
@@ -132,7 +132,7 @@
       if (!confirm("Sigur vrei să ștergi acest punct?")) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/points/${id}`, {
+        const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/points/${id}`, {
           method: "DELETE",
           headers: { Authorization: "Bearer " + token }
         });

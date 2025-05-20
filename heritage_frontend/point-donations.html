@@ -121,7 +121,7 @@
     const poi = new URLSearchParams(window.location.search).get("poi");
 
     async function load() {
-      const all = await fetch("http://localhost:5000/api/donation-campaigns").then(r => r.json());
+      const all = await fetch("https://heritage-backend-p1hv.onrender.com/api/donation-campaigns").then(r => r.json());
       const filtered = all.filter(c => c.point_of_interest_id == poi);
       const list = document.getElementById("list");
       list.innerHTML = "";

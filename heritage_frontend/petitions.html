@@ -134,12 +134,12 @@
       }
 
       try {
-        const petitionsRes = await fetch("http://localhost:5000/api/petitions", {
+        const petitionsRes = await fetch("https://heritage-backend-p1hv.onrender.com/api/petitions", {
           headers: { Authorization: "Bearer " + token }
         });
         const petitions = await petitionsRes.json();
 
-        const signedRes = await fetch("http://localhost:5000/api/my-signed-petitions", {
+        const signedRes = await fetch("https://heritage-backend-p1hv.onrender.com/api/my-signed-petitions", {
           headers: { Authorization: "Bearer " + token }
         });
         const signedPetitions = await signedRes.json();
@@ -174,7 +174,7 @@
             const petitionDiv = button.closest(".petition");
             const petitionId = petitionDiv.getAttribute("data-id");
 
-            const res = await fetch(`http://localhost:5000/api/petitions/${petitionId}/sign`, {
+            const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/petitions/${petitionId}/sign`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

@@ -164,7 +164,7 @@
       const token = localStorage.getItem("heritage_token");
 
       try {
-        const res = await fetch("http://localhost:5000/api/petitions", {
+        const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/petitions", {
           headers: { Authorization: "Bearer " + token }
         });
 
@@ -197,7 +197,7 @@
           deleteBtn.addEventListener("click", async () => {
             const id = deleteBtn.getAttribute("data-id");
             if (confirm("Ești sigur că vrei să ștergi această petiție?")) {
-              const resp = await fetch(`http://localhost:5000/api/petitions/${id}`, {
+              const resp = await fetch(`https://heritage-backend-p1hv.onrender.com/api/petitions/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: "Bearer " + token }
               });
@@ -224,7 +224,7 @@
             const title = form.title.value.trim();
             const description = form.description.value.trim();
 
-            const res = await fetch(`http://localhost:5000/api/petitions/${id}`, {
+            const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/petitions/${id}`, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",

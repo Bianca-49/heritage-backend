@@ -134,7 +134,7 @@
     const token = localStorage.getItem("heritage_token");
 
     async function loadPoints() {
-      const res = await fetch("http://localhost:5000/api/points");
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/points");
       const points = await res.json();
       const select = document.getElementById("poiSelect");
 
@@ -152,7 +152,7 @@
       const description = document.getElementById("description").value;
       const pointId = document.getElementById("poiSelect").value;
 
-      const res = await fetch("http://localhost:5000/api/admin/donations", {
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/admin/donations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

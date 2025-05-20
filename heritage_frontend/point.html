@@ -255,7 +255,7 @@
     if (!id) {
       document.getElementById("main").innerHTML = "<h2>ID-ul nu a fost specificat în URL.</h2>";
     } else {
-      fetch(`http://localhost:5000/api/points/${id}`)
+      fetch(`https://heritage-backend-p1hv.onrender.com/api/points/${id}`)
         .then(res => res.json())
         .then(data => {
           document.getElementById("title").textContent = data.title;
@@ -299,7 +299,7 @@
 
     async function loadMessages() {
       try {
-        const res = await fetch("http://localhost:5000/api/messages?poi=" + id);
+        const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/messages?poi=" + id);
         const messages = await res.json();
         const container = document.getElementById("chat-messages");
         container.innerHTML = "";
@@ -320,7 +320,7 @@
       const content = input.value;
 
       try {
-        await fetch("http://localhost:5000/api/messages", {
+        await fetch("https://heritage-backend-p1hv.onrender.com/api/messages", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

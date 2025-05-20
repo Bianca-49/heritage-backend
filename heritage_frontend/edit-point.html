@@ -124,7 +124,7 @@
     const token = localStorage.getItem("heritage_token");
 
     // Încarcă datele existente
-    fetch(`http://localhost:5000/api/points/${id}`)
+    fetch(`https://heritage-backend-p1hv.onrender.com/api/points/${id}`)
       .then(res => res.json())
       .then(data => {
         document.getElementById("title").value = data.title || "";
@@ -160,7 +160,7 @@
       };
 
       try {
-        const res = await fetch(`http://localhost:5000/api/points/${id}`, {
+        const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/points/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
