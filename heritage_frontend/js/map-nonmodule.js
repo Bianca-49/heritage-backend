@@ -1,5 +1,6 @@
 function initMap() {
     fetch("https://heritage-backend-p1hv.onrender.com/api/points")
+    fetch("http://https://heritage-backend-p1hv.onrender.com/api/points")
         .then(res => res.json())
         .then(points => {
             const map = new google.maps.Map(document.getElementById("map"), {

@@ -11,6 +11,7 @@ export async function login(email, password) {
     });
     return await res.json();
 }
+
 export async function register(username, email, password) {
     const res = await fetch('https://heritage-backend-p1hv.onrender.com/api/register', {
         method: 'POST',
