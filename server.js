@@ -41,7 +41,7 @@ function authenticateToken(req, res, next) {
 passport.use(new GoogleStrategy({
   clientID: '1009532882200-u90dnfrh436osipo5iv33gihnlrrqpcs.apps.googleusercontent.com',
   clientSecret: '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',
-  callbackURL: 'http://localhost:5000/auth/google/callback'
+  callbackURL: 'https://heritage-backend-p1hv.onrender.com/auth/google/callback'
 },
 (accessToken, refreshToken, profile, done) => {
   const email = profile.emails[0].value;
