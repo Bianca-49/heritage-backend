@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Heritage Map</title>
+    <link rel="stylesheet" href="map.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Meniu tip 3 puncte -->
+    <div id="menu-toggle" onclick="toggleMenu()">⋮</div>
+
+    <!-- Meniu extins (ascuns inițial) -->
+    <div id="dropdown-menu">
+      <button onclick="openAddForm()">➕ Adaugă punct</button>
+      <button onclick="logout()">🚪 Delogare</button>
+    </div>
+
+    <!-- Harta -->
+    <div id="map"></div>
+  </div>
+
+
+    <!-- Buton 3 puncte 
+    <div id="menu-toggle" onclick="toggleMenu()">⋮</div>
+
+    Meniul dropdown 
+    <div id="dropdown-menu">
+        <button onclick="openAddForm()">Adaugă punct de interes</button>
+        <button onclick="logout()">Delogare</button>
+    </div> -->
+
+    <script type="module">
+        import { getPoints } from "./js/api.js";
+
+        let map;
+
+        async function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 45.9432, lng: 24.9668 }, // Romania
+                zoom: 7,
+            });
+
+            const points = await getPoints();
+
+            points.forEach((point) => {
+                const marker = new google.maps.Marker({
+                    position: { lat: point.latitude, lng: point.longitude },
+                    map,
+                    title: point.title,
+                });
+
+                const content = `
+                    <div class="popup">
+                        <h3>${point.title}</h3>
+                        <p>${point.description || ""}</p>
+                        ${point.image_url ? `<img src="${point.image_url}" width="100%" />` : ""}
+                        ${point.video_url ? `<p><a href="${point.video_url}" target="_blank">Video</a></p>` : ""}
+                    </div>
+                `;
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content,
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        window.initMap = initMap;
+    </script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+        if (token) {
+            localStorage.setItem("heritage_token", token);
+            console.log("Token salvat:", token);
+        }
+    </script>
+
+
+    <!-- 🔑 INLOCUIEȘTE CU CHEIA TA REALĂ GOOGLE MAPS -->
+    <script src="./js/map-nonmodule.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuAOKcf4s4kcJlMjj2ERX_7UkV6YXWDoc&callback=initMap"></script>
+    <button onclick="logout()">Delogare</button>
+    <script>
+        function logout() {
+            localStorage.removeItem("heritage_token");
+            alert("Ai fost delogat cu succes!");
+            window.location.href = "login.html";
+        }
+    </script>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("dropdown-menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        function logout() {
+            localStorage.removeItem("heritage_token");
+      		alert("Ai fost delogat!");
+      		window.location.href = "login.html";
+  		}
+
+  		function openAddForm() {
+      		alert("Aici va apărea formularul de adăugare punct (îl facem imediat)!");
+      // Aici putem deschide un formular real (facem mai târziu)
+  		}
+	</script>
+
+
+
+</body>
+
+</html>

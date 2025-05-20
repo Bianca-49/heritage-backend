@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Heritage Map</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #topbar {
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+    }
+
+    #topbar button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 60px);
+      transition: all 0.3s ease;
+    }
+
+    /* ✅ Sidebar normal */
+    #sidebar {
+      width: 220px;
+      background: #34495e;
+      padding: 1rem;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s ease;
+      z-index: 2;
+    }
+
+    /* ✅ Sidebar retras */
+    .sidebar-hidden #sidebar {
+      transform: translateX(-100%);
+      position: absolute;
+      left: 0;
+      top: 60px;
+      height: calc(100vh - 60px);
+    }
+
+    .sidebar-btn {
+      display: block;
+      margin-bottom: 10px;
+      background: #1abc9c;
+      border: none;
+      padding: 10px;
+      color: white;
+      border-radius: 5px;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    #map {
+      flex: 1;
+      height: 100%;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Bara de sus -->
+  <div id="topbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="menu-button" onclick="toggleSidebar()">☰</button>
+      <div id="username">Bun venit!</div>
+    </div>
+    <div id="admin-back-container"></div>
+  </div>
+
+  <!-- ✅ Conținut principal -->
+  <div class="container" id="main-container">
+    <div id="sidebar">
+      <div>
+        <button class="sidebar-btn" onclick="openAddForm()">➕ Adaugă punct de interes</button>
+        <button id="petitions-btn" class="sidebar-btn" onclick="goToPetitions()">📄 Vezi petiții</button>
+        <button class="sidebar-btn" onclick="window.location.href='donation-campaigns.html'">💰 Vezi toate campaniile</button>
+      </div>
+      <div>
+        <button class="sidebar-btn" onclick="logout()">🚪 Delogare</button>
+      </div>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <!-- ✅ Script principal -->
+  <script type="module">
+    import { getPoints } from "./js/api.js";
+
+    async function initMap() {
+      window.map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 45.9432, lng: 24.9668 },
+        zoom: 7,
+      });
+
+      const points = await getPoints();
+      points.forEach((point) => {
+        const marker = new google.maps.Marker({
+          position: { lat: point.latitude, lng: point.longitude },
+          map: window.map,
+          title: point.title,
+        });
+
+        marker.addListener("click", () => {
+          window.location.href = `point.html?id=${point.id}`;
+        });
+      });
+    }
+
+    window.addEventListener("load", () => {
+      const interval = setInterval(() => {
+        if (window.google && window.google.maps) {
+          clearInterval(interval);
+          initMap();
+        }
+      }, 100);
+    });
+
+    window.openAddForm = function () {
+      if (window.map && typeof window.map.getCenter === "function") {
+        const center = window.map.getCenter();
+        const lat = center.lat();
+        const lng = center.lng();
+        window.location.href = `add-point.html?lat=${lat}&lng=${lng}`;
+      } else {
+        alert("Harta nu este încă încărcată!");
+      }
+    };
+
+    window.goToPetitions = function () {
+      window.location.href = "petitions.html";
+    };
+
+    window.toggleSidebar = function () {
+      document.getElementById("main-container").classList.toggle("sidebar-hidden");
+    };
+
+    window.logout = function () {
+      localStorage.removeItem("heritage_token");
+      alert("Ai fost delogat!");
+      window.location.href = "login.html";
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("heritage_token", token);
+    }
+
+    const savedToken = localStorage.getItem("heritage_token");
+    if (savedToken) {
+      fetch("http://localhost:5000/api/me", {
+        headers: { Authorization: "Bearer " + savedToken }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Autentificare eșuată");
+        return res.json();
+      })
+      .then(user => {
+        document.getElementById("username").textContent = `Bun venit, ${user.username}!`;
+
+        if (user.role === "admin") {
+          document.getElementById("petitions-btn").style.display = "none";
+
+          const btn = document.createElement("button");
+          btn.textContent = "⬅️ Înapoi la Admin";
+          btn.onclick = () => window.location.href = "admin.html";
+          btn.style.backgroundColor = "#1abc9c";
+          btn.style.border = "none";
+          btn.style.color = "white";
+          btn.style.padding = "8px 12px";
+          btn.style.borderRadius = "5px";
+          btn.style.cursor = "pointer";
+          document.getElementById("admin-back-container").appendChild(btn);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Te rugăm să te reconectezi.");
+        window.location.href = "login.html";
+      });
+    }
+  </script>
+
+  <!-- ✅ Google Maps -->
+  <script
+    async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuAOKcf4s4kcJlMjj2ERX_7UkV6YXWDoc&libraries=places">
+  </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Campanii pentru acest punct</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ecf0f3;
+      padding: 80px 2rem 2rem;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    #navbar {
+      background-color: #2c3e50;
+      color: white;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+    }
+
+    #navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #navbar a {
+      background-color: #1abc9c;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    #navbar a:hover {
+      background-color: #16a085;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+    }
+
+    #list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .campaign-card {
+      background: #ffffff;
+      padding: 1.5rem;
+      border-left: 6px solid #1abc9c;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease;
+    }
+
+    .campaign-card:hover {
+      transform: scale(1.01);
+    }
+
+    .campaign-card h3 {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    .campaign-card p {
+      margin: 0.75rem 0;
+      color: #555;
+    }
+
+    .campaign-card button {
+      padding: 10px 16px;
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .campaign-card button:hover {
+      background-color: #16a085;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navbar -->
+  <div id="navbar">
+    <h1>💰 Donații Heritage</h1>
+    <a href="map.html">🏠 Acasă</a>
+  </div>
+
+  <h1>💸 Campanii donații pentru punctul selectat</h1>
+  <div id="list">Se încarcă...</div>
+
+  <script>
+    const poi = new URLSearchParams(window.location.search).get("poi");
+
+    async function load() {
+      const all = await fetch("http://localhost:5000/api/donation-campaigns").then(r => r.json());
+      const filtered = all.filter(c => c.point_of_interest_id == poi);
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      filtered.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "campaign-card";
+        div.innerHTML = `
+          <h3>${c.title}</h3>
+          <p>${c.description || "Fără descriere"}</p>
+          <button onclick="window.location.href='donate.html?campaign=${c.id}'">💸 Donează</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    load();
+  </script>
+
+</body>
+</html>

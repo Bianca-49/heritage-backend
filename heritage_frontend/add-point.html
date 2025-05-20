@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Adaugă punct de interes</title>
+  <style>
+      * {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 80px 2rem 2rem;
+    background-color: #f4f6f9;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #34495e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+  }
+
+  #navbar h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  #navbar a {
+    background-color: #1abc9c;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  #navbar a:hover {
+    background-color: #16a085;
+  }
+
+  h2 {
+    font-size: 26px;
+    margin: 1rem 0 1.5rem;
+    color: #2c3e50;
+  }
+
+  form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  label {
+    display: block;
+    margin-top: 1.2rem;
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    transition: border-color 0.2s;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: #1abc9c;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #16a085;
+  }
+
+  #place-input {
+    max-width: 800px;
+    display: block;
+    margin: 0 auto 1.5rem;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+
+  #map {
+    height: 400px;
+    width: 100%;
+    margin: 2rem auto 0;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    max-width: 800px;
+  }
+
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navbar -->
+  <div id="navbar">
+    <h1>➕ Adaugă punct de interes</h1>
+    <a href="map.html">🏠 Acasă</a>
+  </div>
+
+  <h2>Adaugă un punct de interes</h2>
+
+  <!-- 🔍 Căutare locație -->
+  <input id="place-input" type="text" placeholder="Caută o locație (ex: Castelul Peleș)" />
+
+  <!-- 📄 Formular -->
+  <form id="add-point-form">
+    <label for="title">Titlu:</label>
+    <input type="text" id="title" required>
+
+    <label for="description">Descriere:</label>
+    <textarea id="description"></textarea>
+
+    <label for="image_url">Imagine:</label>
+    <input type="url" id="image_url" required>
+
+    <label for="video_url">Video:</label>
+    <input type="url" id="video_url" required>
+
+    <input type="hidden" id="latitude">
+    <input type="hidden" id="longitude">
+
+    <label for="awareness">Campanie de informare:</label>
+    <textarea id="awareness" required></textarea>
+
+    <label for="historical_info">Particularități istorice:</label>
+    <textarea id="historical_info" required></textarea>
+
+    <label for="architectural_info">Particularități arhitecturale:</label>
+    <textarea id="architectural_info" required></textarea>
+
+    <label for="archaeological_info">Particularități arheologice:</label>
+    <textarea id="archaeological_info" required></textarea>
+
+    <label for="legal_measures">Legislație / conservare:</label>
+    <textarea id="legal_measures" required></textarea>
+
+    <button type="submit">Trimite</button>
+  </form>
+
+  <div id="map"></div>
+
+  <script>
+    let map;
+    let marker;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 45.9432, lng: 24.9668 },
+        zoom: 7,
+      });
+
+      const input = document.getElementById("place-input");
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.bindTo("bounds", map);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+          alert("Locație invalidă.");
+          return;
+        }
+
+        map.setCenter(place.geometry.location);
+        map.setZoom(15);
+
+        if (marker) marker.setMap(null);
+
+        marker = new google.maps.Marker({
+          map,
+          position: place.geometry.location
+        });
+
+        document.getElementById("latitude").value = place.geometry.location.lat();
+        document.getElementById("longitude").value = place.geometry.location.lng();
+
+        if (!document.getElementById("title").value) {
+          document.getElementById("title").value = place.name;
+        }
+      });
+    }
+
+    document.getElementById("add-point-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const token = localStorage.getItem("heritage_token");
+      if (!token) {
+        alert("Nu ești autentificat.");
+        return;
+      }
+
+      const userRes = await fetch("http://localhost:5000/api/me", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      if (!userRes.ok) {
+        alert("Autentificare eșuată. Te rugăm să te loghezi din nou.");
+        return;
+      }
+
+      const user = await userRes.json();
+
+      const body = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        latitude: parseFloat(document.getElementById("latitude").value),
+        longitude: parseFloat(document.getElementById("longitude").value),
+        image_url: document.getElementById("image_url").value,
+        video_url: document.getElementById("video_url").value,
+        awareness: document.getElementById("awareness").value,
+        historical_info: document.getElementById("historical_info").value,
+        architectural_info: document.getElementById("architectural_info").value,
+        archaeological_info: document.getElementById("archaeological_info").value,
+        legal_measures: document.getElementById("legal_measures").value,
+        created_by_user_id: user.id
+      };
+
+      const res = await fetch("http://localhost:5000/api/points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Punct adăugat cu succes!");
+        window.location.href = "map.html";
+      } else {
+        alert("Eroare: " + data.message);
+      }
+    });
+  </script>
+
+  <!-- ✅ Include Google Maps + Places -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuAOKcf4s4kcJlMjj2ERX_7UkV6YXWDoc&libraries=places&callback=initMap">
+  </script>
+</body>
+</html>

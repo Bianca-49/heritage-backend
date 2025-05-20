@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Heritage Xplorer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* ✅ Imagine fundal cu blur */
+    body::before {
+      content: "";
+      background-image: url('https://image.stirileprotv.ro/media/images/1920x1080/May2023/62348014.jpg');
+      background-size: cover;
+      background-position: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      filter: blur(0px) brightness(0.85);
+      z-index: -1;
+    }
+
+    #container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ✅ Sidebar */
+    #sidebar {
+      width: 260px;
+      background-color: rgba(44, 62, 80, 0.95);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .nav-btn {
+      background-color: #1abc9c;
+      border: none;
+      color: white;
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #16a085;
+    }
+
+    .logout-container {
+      border-top: 1px solid #34495e;
+      padding-top: 1rem;
+      margin-top: auto;
+    }
+
+    /* ✅ Main content */
+    #main {
+      flex: 1;
+      padding: 3rem;
+      color: #2c3e50;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 12px 24px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+
+    #user-section {
+      margin-top: 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <!-- ✅ Sidebar -->
+  <div id="sidebar">
+    <div>
+      <button class="nav-btn" onclick="window.location.href='map.html'">🗺️ Hartă</button>
+      <button class="nav-btn" onclick="window.location.href='add-point.html'">➕ Adaugă punct</button>
+      <button class="nav-btn" onclick="window.location.href='admin-points.html'">🗂️ Puncte de interes</button>
+      <button class="nav-btn" onclick="window.location.href='all-petitions-admin.html'">📜 Petiții</button>
+      <button class="nav-btn" onclick="window.location.href='admin-donations.html'">💰 Creează campanie</button>
+      <button class="nav-btn" onclick="window.location.href='admin-campaigns.html'">📢 Campaniile mele</button>
+      <button class="nav-btn" onclick="loadUsers()">👥 Utilizatori</button>
+    </div>
+
+    <div class="logout-container">
+      <button class="nav-btn" onclick="logout()">🚪 Delogare</button>
+    </div>
+  </div>
+
+  <!-- ✅ Conținut principal -->
+  <div id="main">
+    <h1>🌍 Bun venit, Admin!</h1>
+
+    <div id="user-section" style="display: none;">
+      <h2>👥 Lista utilizatorilor</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Utilizator</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Acțiuni</th>
+        </tr>
+        </thead>
+        <tbody id="user-table-body">
+        <tr><td colspan="5">Se încarcă...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem("heritage_token");
+
+  async function loadUsers() {
+    const section = document.getElementById("user-section");
+    const tbody = document.getElementById("user-table-body");
+    section.style.display = "block";
+
+    try {
+      const res = await fetch("http://localhost:5000/api/users", {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      if (!res.ok) throw new Error("Acces interzis");
+
+      const users = await res.json();
+      tbody.innerHTML = "";
+
+      users.forEach((u, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${u.username}</td>
+          <td>${u.email}</td>
+          <td>${u.role}</td>
+          <td><button class="delete-btn" onclick="deleteUser(${u.id})">🗑️ Șterge</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5">Eroare la încărcare utilizatori.</td></tr>`;
+      console.error(err);
+    }
+  }
+
+  async function deleteUser(id) {
+    if (!confirm("Ești sigur că vrei să ștergi acest utilizator?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Utilizator șters!");
+        loadUsers();
+      } else {
+        alert("Eroare: " + data.message);
+      }
+    } catch (err) {
+      alert("Eroare la ștergere.");
+      console.error(err);
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("heritage_token");
+    alert("Ai fost delogat!");
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

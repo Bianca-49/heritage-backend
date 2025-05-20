@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalii punct de interes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #ecf0f3;
+      color: #2c3e50;
+    }
+
+    /* ✅ Navbar */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #2c3e50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      color: white;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #navbar h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    #navbar a {
+      background-color: #1abc9c;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    #navbar a:hover {
+      background-color: #16a085;
+    }
+
+    /* ✅ Sidebar */
+    #sidebar {
+      width: 240px;
+      background-color: #34495e;
+      color: white;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 60px;
+    }
+
+    .nav-btn {
+      background-color: #1abc9c;
+      border: none;
+      color: white;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    .nav-btn:hover {
+      background-color: #16a085;
+    }
+
+    /* ✅ Main content */
+    #main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      margin-top: 60px;
+    }
+
+    #main h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .info-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      max-width: 900px;
+    }
+
+    .info-card h2 {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #34495e;
+    }
+
+    .info-card p {
+      margin: 0.6rem 0;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .info-card img {
+      max-width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      margin-top: 1rem;
+    }
+
+    .info-card a {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 10px 16px;
+      background-color: #1abc9c;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .info-card a:hover {
+      background-color: #16a085;
+    }
+
+    /* ✅ Chat box */
+    #chat-box {
+      width: 300px;
+      background-color: #f5f5f5;
+      border-left: 2px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      height: calc(100vh - 60px);
+      margin-top: 60px;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      padding-right: 5px;
+    }
+
+    #chat-messages div {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: #e6f7ff;
+      border-radius: 6px;
+      word-wrap: break-word;
+    }
+
+    #chat-form {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 14px;
+    }
+
+    #chat-form button {
+      padding: 0.5rem 0.9rem;
+      font-size: 14px;
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #chat-form button:hover {
+      background-color: #16a085;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navbar -->
+  <div id="navbar">
+    <h1>🗺️ Heritage Xplorer</h1>
+    <a href="map.html">🏠 Acasă</a>
+  </div>
+
+  <!-- ✅ Sidebar -->
+  <div id="sidebar">
+    <button class="nav-btn" id="view-petitions">📜 Vizualizează petiții</button>
+    <button class="nav-btn" id="create-petition">➕ Creează petiție</button>
+    <button class="nav-btn" id="donate-btn">💸 Campanii donații</button>
+  </div>
+
+  <!-- ✅ Main content -->
+  <div id="main">
+    <div class="info-card">
+      <h1 id="title">Încărcare...</h1>
+      <img id="image" style="display: none;" />
+      <p id="description"></p>
+
+      <h2>📢 Campanie de informare:</h2>
+      <p id="awareness"></p>
+
+      <h2>🏛️ Particularități istorice:</h2>
+      <p id="historical_info"></p>
+
+      <h2>🏗️ Particularități arhitecturale:</h2>
+      <p id="architectural_info"></p>
+
+      <h2>🏺 Particularități arheologice:</h2>
+      <p id="archaeological_info"></p>
+
+      <h2>📜 Legislație / protecție:</h2>
+      <p id="legal_measures"></p>
+
+      <a id="video" target="_blank" style="display: none;">🎥 Vezi video</a>
+    </div>
+  </div>
+
+  <!-- ✅ Chat lateral -->
+  <div id="chat-box">
+    <div id="chat-messages">Se încarcă mesaje...</div>
+    <form id="chat-form">
+      <input type="text" id="chat-input" placeholder="Scrie un mesaj..." required />
+      <button type="submit">Trimite</button>
+    </form>
+  </div>
+
+  <!-- ✅ Script -->
+  <script>
+    const id = new URLSearchParams(window.location.search).get("id");
+    const token = localStorage.getItem("heritage_token");
+
+    if (!id) {
+      document.getElementById("main").innerHTML = "<h2>ID-ul nu a fost specificat în URL.</h2>";
+    } else {
+      fetch(`http://localhost:5000/api/points/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("title").textContent = data.title;
+          document.getElementById("description").textContent = data.description || "";
+
+          if (data.image_url) {
+            const img = document.getElementById("image");
+            img.src = data.image_url;
+            img.style.display = "block";
+          }
+
+          if (data.video_url) {
+            const link = document.getElementById("video");
+            link.href = data.video_url;
+            link.style.display = "inline-block";
+            link.textContent = "🎥 Vezi video";
+          }
+
+          document.getElementById("awareness").textContent = data.awareness || "-";
+          document.getElementById("historical_info").textContent = data.historical_info || "-";
+          document.getElementById("architectural_info").textContent = data.architectural_info || "-";
+          document.getElementById("archaeological_info").textContent = data.archaeological_info || "-";
+          document.getElementById("legal_measures").textContent = data.legal_measures || "-";
+        })
+        .catch(() => {
+          document.getElementById("main").innerHTML = "<h2>Eroare la încărcarea datelor.</h2>";
+        });
+    }
+
+    document.getElementById("view-petitions").addEventListener("click", () => {
+      window.location.href = `unique-petitions.html?poi=${id}`;
+    });
+
+    document.getElementById("create-petition").addEventListener("click", () => {
+      window.location.href = `create-petition.html?poi=${id}`;
+    });
+
+    document.getElementById("donate-btn").addEventListener("click", () => {
+      window.location.href = `point-donations.html?poi=${id}`;
+    });
+
+    async function loadMessages() {
+      try {
+        const res = await fetch("http://localhost:5000/api/messages?poi=" + id);
+        const messages = await res.json();
+        const container = document.getElementById("chat-messages");
+        container.innerHTML = "";
+        messages.forEach(m => {
+          const msg = document.createElement("div");
+          msg.textContent = `${m.username || "Anonim"}: ${m.content}`;
+          container.appendChild(msg);
+        });
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        console.error("Eroare la încărcare mesaje:", err);
+      }
+    }
+
+    document.getElementById("chat-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const input = document.getElementById("chat-input");
+      const content = input.value;
+
+      try {
+        await fetch("http://localhost:5000/api/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify({
+            content,
+            point_of_interest_id: id,
+            user_id: JSON.parse(atob(token.split(".")[1])).id,
+            is_general: false
+          })
+        });
+        input.value = "";
+        loadMessages();
+      } catch (err) {
+        alert("Eroare la trimiterea mesajului");
+      }
+    });
+
+    loadMessages();
+    setInterval(loadMessages, 5000);
+  </script>
+</body>
+</html>

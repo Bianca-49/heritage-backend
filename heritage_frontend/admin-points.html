@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Puncte de interes - Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ecf0f3;
+      padding: 2rem;
+      color: #2c3e50;
+      line-height: 1.6;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      color: #2c3e50;
+    }
+
+    .point {
+      background: #ffffff;
+      border-left: 6px solid #1abc9c;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease;
+    }
+
+    .point:hover {
+      transform: scale(1.01);
+    }
+
+    .point h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      color: #2c3e50;
+    }
+
+    .point p {
+      margin: 0.5rem 0;
+      color: #555;
+    }
+
+    .delete-btn,
+    .edit-btn {
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+    }
+
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .edit-btn:hover {
+      background-color: #16a085;
+    }
+
+    #back {
+      display: inline-block;
+      background-color: #1abc9c;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      transition: background-color 0.3s ease;
+    }
+
+    #back:hover {
+      background-color: #16a085;
+    }
+  </style>
+</head>
+<body>
+
+  <a id="back" href="admin.html">⬅️ Înapoi la Admin</a>
+  <h1>🗂️ Puncte de interes</h1>
+  <div id="pointsList">Se încarcă...</div>
+
+  <script>
+    const token = localStorage.getItem("heritage_token");
+
+    async function loadPoints() {
+      try {
+        const res = await fetch("http://localhost:5000/api/points");
+        const points = await res.json();
+
+        const container = document.getElementById("pointsList");
+        container.innerHTML = "";
+
+        points.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "point";
+          div.innerHTML = `
+            <h2>${p.title}</h2>
+            <p><strong>Coordonate:</strong> ${p.latitude}, ${p.longitude}</p>
+            <p>${p.description || "Fără descriere"}</p>
+            <button class="edit-btn" onclick="editPoint(${p.id})">✏️ Editează</button>
+            <button class="delete-btn" onclick="deletePoint(${p.id})">🗑️ Șterge</button>
+          `;
+          container.appendChild(div);
+        });
+
+      } catch (err) {
+        document.getElementById("pointsList").innerHTML = "Eroare la încărcare.";
+        console.error(err);
+      }
+    }
+
+    async function deletePoint(id) {
+      if (!confirm("Sigur vrei să ștergi acest punct?")) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/points/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Punct șters!");
+          loadPoints();
+        } else {
+          alert("Eroare: " + data.message);
+        }
+      } catch (err) {
+        alert("Eroare la ștergere!");
+        console.error(err);
+      }
+    }
+
+    function editPoint(id) {
+      window.location.href = `edit-point.html?id=${id}`;
+    }
+
+    loadPoints();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Toate petițiile</title>
+  <style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ecf0f3;
+    padding: 80px 2rem 2rem;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  /* Navbar stilizat */
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    color: white;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  #navbar h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  #navbar a {
+    background-color: #1abc9c;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+
+  #navbar a:hover {
+    background-color: #16a085;
+  }
+
+  /* Carduri pentru petiții */
+  .petition {
+    background: #ffffff;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 6px solid #3498db;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+    position: relative;
+  }
+
+  .petition:hover {
+    transform: scale(1.01);
+  }
+
+  .petition h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .petition p {
+    margin-bottom: 0.5rem;
+    color: #555;
+  }
+
+  /* Butoane */
+  .petition button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+
+  .edit-btn {
+    background-color: #3498db;
+    color: white;
+    margin-right: 10px;
+  }
+
+  .edit-btn:hover {
+    background-color: #2980b9;
+  }
+
+  /* Formular editare */
+  form.edit-form {
+    margin-top: 1rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+    display: none;
+  }
+
+  form.edit-form input,
+  form.edit-form textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+  }
+
+  form.edit-form button[type="submit"] {
+    background-color: #1abc9c;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  form.edit-form button[type="submit"]:hover {
+    background-color: #16a085;
+  }
+
+  </style>
+</head>
+<body>
+  <div id="navbar">
+    <h1>📋 Admin - Toate petițiile</h1>
+    <a href="admin.html">🏠 Înapoi la Admin</a>
+  </div>
+
+  <div id="petition-list">Se încarcă...</div>
+
+  <script>
+    async function loadPetitions() {
+      const container = document.getElementById("petition-list");
+      const token = localStorage.getItem("heritage_token");
+
+      try {
+        const res = await fetch("http://localhost:5000/api/petitions", {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        const petitions = await res.json();
+        container.innerHTML = "";
+
+        if (!Array.isArray(petitions) || petitions.length === 0) {
+          container.innerHTML = "<p>Nu există petiții.</p>";
+          return;
+        }
+
+        petitions.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "petition";
+          div.innerHTML = `
+            <h3>${p.title}</h3>
+            <p>${p.description || "Fără descriere"}</p>
+            <p><strong>Semnături:</strong> ${p.signatures_count}</p>
+            <button class="delete-btn" data-id="${p.id}">🗑️ Șterge</button>
+            <button class="edit-btn" data-id="${p.id}">✏️ Editează</button>
+            <form class="edit-form" style="display:none;">
+              <input type="text" name="title" value="${p.title}" required />
+              <textarea name="description" required>${p.description || ""}</textarea>
+              <button type="submit">📎 Salvează</button>
+            </form>
+          `;
+
+          // Ștergere
+          const deleteBtn = div.querySelector(".delete-btn");
+          deleteBtn.addEventListener("click", async () => {
+            const id = deleteBtn.getAttribute("data-id");
+            if (confirm("Ești sigur că vrei să ștergi această petiție?")) {
+              const resp = await fetch(`http://localhost:5000/api/petitions/${id}`, {
+                method: "DELETE",
+                headers: { Authorization: "Bearer " + token }
+              });
+              const data = await resp.json();
+              if (resp.ok) {
+                alert("Petiție ștearsă!");
+                loadPetitions();
+              } else {
+                alert("Eroare: " + data.message);
+              }
+            }
+          });
+
+          // Editare
+          const editBtn = div.querySelector(".edit-btn");
+          const form = div.querySelector(".edit-form");
+          editBtn.addEventListener("click", () => {
+            form.style.display = form.style.display === "none" ? "block" : "none";
+          });
+
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = editBtn.getAttribute("data-id");
+            const title = form.title.value.trim();
+            const description = form.description.value.trim();
+
+            const res = await fetch(`http://localhost:5000/api/petitions/${id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ title, description })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+              alert("Petiție actualizată!");
+              loadPetitions();
+            } else {
+              alert("Eroare: " + data.message);
+            }
+          });
+
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "Eroare la încărcare.";
+      }
+    }
+
+    loadPetitions();
+  </script>
+</body>
+</html>

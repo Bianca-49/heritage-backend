@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Editează punct</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-top: 80px;
+      background-color: #f3f3f3;
+    }
+
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #2c3e50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      color: white;
+      z-index: 1000;
+    }
+
+    #navbar h1 {
+      font-size: 20px;
+    }
+
+    #navbar a {
+      background-color: #1abc9c;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    #navbar a:hover {
+      background-color: #16a085;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #16a085;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar">
+    <h1>✏️ Editează punct</h1>
+    <a href="map.html">🏠 Acasă</a>
+  </div>
+
+  <form id="edit-form">
+    <label for="title">Titlu:</label>
+    <input type="text" id="title" required>
+
+    <label for="description">Descriere:</label>
+    <textarea id="description"></textarea>
+
+    <label for="image_url">Imagine:</label>
+    <input type="url" id="image_url">
+
+    <label for="video_url">Video:</label>
+    <input type="url" id="video_url">
+
+    <label for="awareness">Campanie de informare:</label>
+    <textarea id="awareness"></textarea>
+
+    <label for="historical_info">Particularități istorice:</label>
+    <textarea id="historical_info"></textarea>
+
+    <label for="architectural_info">Particularități arhitecturale:</label>
+    <textarea id="architectural_info"></textarea>
+
+    <label for="archaeological_info">Particularități arheologice:</label>
+    <textarea id="archaeological_info"></textarea>
+
+    <label for="legal_measures">Legislație / conservare:</label>
+    <textarea id="legal_measures"></textarea>
+
+    <input type="hidden" id="latitude">
+    <input type="hidden" id="longitude">
+
+    <button type="submit">💾 Salvează</button>
+  </form>
+
+  <script>
+    const id = new URLSearchParams(window.location.search).get("id");
+    const token = localStorage.getItem("heritage_token");
+
+    // Încarcă datele existente
+    fetch(`http://localhost:5000/api/points/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("title").value = data.title || "";
+        document.getElementById("description").value = data.description || "";
+        document.getElementById("image_url").value = data.image_url || "";
+        document.getElementById("video_url").value = data.video_url || "";
+        document.getElementById("awareness").value = data.awareness || "";
+        document.getElementById("historical_info").value = data.historical_info || "";
+        document.getElementById("architectural_info").value = data.architectural_info || "";
+        document.getElementById("archaeological_info").value = data.archaeological_info || "";
+        document.getElementById("legal_measures").value = data.legal_measures || "";
+
+        // Coordonate inițiale
+        document.getElementById("latitude").value = data.latitude;
+        document.getElementById("longitude").value = data.longitude;
+      });
+
+    document.getElementById("edit-form").addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const body = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        latitude: parseFloat(document.getElementById("latitude").value),
+        longitude: parseFloat(document.getElementById("longitude").value),
+        image_url: document.getElementById("image_url").value,
+        video_url: document.getElementById("video_url").value,
+        awareness: document.getElementById("awareness").value,
+        historical_info: document.getElementById("historical_info").value,
+        architectural_info: document.getElementById("architectural_info").value,
+        archaeological_info: document.getElementById("archaeological_info").value,
+        legal_measures: document.getElementById("legal_measures").value
+      };
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/points/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert("Punct actualizat cu succes!");
+          window.location.href = "map.html";
+        } else {
+          alert("Eroare: " + data.message);
+        }
+      } catch (err) {
+        alert("Eroare la actualizare!");
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

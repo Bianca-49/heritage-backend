@@ -1,0 +1,176 @@
+<!DOCTYPE html> 
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Campanii Donații</title>
+  <style>
+    body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ecf0f3;
+    padding: 2rem;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  h1 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    max-width: 700px;
+    margin: 0 auto 2rem;
+  }
+
+  label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.3rem;
+    margin-bottom: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+    font-size: 1rem;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #1abc9c;
+    outline: none;
+  }
+
+  button {
+    background: #1abc9c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+  }
+
+  button:hover {
+    background: #16a085;
+  }
+
+  /* Navbar stilizat */
+  .navbar {
+    background-color: #2c3e50;
+    padding: 1rem 2rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
+
+  .navbar h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .navbar a button {
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .navbar a button:hover {
+    background-color: #16a085;
+  }
+
+  </style>
+</head>
+<body>
+  <div style="background-color: #2c3e50; padding: 1rem; color: white; display: flex; justify-content: space-between; align-items: center;">
+    <h2 style="margin: 0;">📋 Admin - Creează o donație</h2>
+    <a href="admin.html" style="text-decoration: none;">
+      <button style="background-color: #1abc9c; color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+        🏠 Înapoi la Admin
+      </button>
+    </a>
+  </div>
+
+
+  <h1>📢 Administrare Campanii Donații</h1>
+
+  <form id="donationForm">
+    <label>Titlu campanie:</label>
+    <input type="text" id="title" required />
+
+    <label>Descriere:</label>
+    <textarea id="description"></textarea>
+
+    <label>Punct de interes:</label>
+    <select id="poiSelect"></select>
+
+    <button type="submit">Creează campanie</button>
+  </form>
+
+  <script>
+    const token = localStorage.getItem("heritage_token");
+
+    async function loadPoints() {
+      const res = await fetch("http://localhost:5000/api/points");
+      const points = await res.json();
+      const select = document.getElementById("poiSelect");
+
+      points.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.title;
+        select.appendChild(option);
+      });
+    }
+
+    document.getElementById("donationForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const pointId = document.getElementById("poiSelect").value;
+
+      const res = await fetch("http://localhost:5000/api/admin/donations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ title, description, point_of_interest_id: pointId })
+      });
+
+      if (res.ok) {
+        alert("Campanie creată!");
+        e.target.reset();
+      } else {
+        alert("Eroare la creare campanie.");
+      }
+    });
+
+    loadPoints();
+  </script>
+
+</body>
+</html>

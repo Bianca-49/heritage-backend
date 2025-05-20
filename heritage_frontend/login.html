@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Heritage</title>
+  <style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ecf0f3;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #2c3e50;
+  }
+
+  form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    width: 320px;
+    text-align: center;
+  }
+
+  form h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  input:focus {
+    border-color: #1976d2;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background: #1565c0;
+  }
+
+  #error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+
+  a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  </style>
+</head>
+<body>
+
+  <form id="loginForm">
+    <h2>Login</h2>
+    <div id="error"></div>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Parola" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Nu ai cont? <a href="register.html">Înregistrează-te aici</a></p>
+
+  <script type="module">
+    import { login } from './js/api.js';
+    import { setToken } from './js/auth.js';
+
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await login(email, password);
+
+        if (res.auth && res.token) {
+          setToken(res.token);
+          localStorage.setItem("username", res.username);
+          localStorage.setItem("heritage_token", res.token); // în caz că e nevoie
+
+          // ✅ Decodează tokenul ca să obținem rolul
+          const payload = JSON.parse(atob(res.token.split('.')[1]));
+
+          if (payload.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'map.html';
+          }
+
+        } else {
+          errorDiv.textContent = res.message || "Eroare la autentificare.";
+        }
+      } catch (err) {
+        errorDiv.textContent = "Eroare de rețea sau server.";
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>
