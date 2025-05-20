@@ -127,7 +127,7 @@
   <div class="separator">sau</div>
 
   <div class="google-container">
-    <button class="google-btn" onclick="location.href='http://localhost:5000/auth/google'">
+    <button class="google-btn" onclick="location.href='https://heritage-backend-p1hv.onrender.com/auth/google'">
       🔐 Înregistrează-te cu Google
     </button>
   </div>
@@ -145,7 +145,7 @@
       const password = document.querySelector('input[name="password"]').value;
 
       try {
-        const res = await fetch("http://localhost:5000/api/register", {
+        const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, email, password })

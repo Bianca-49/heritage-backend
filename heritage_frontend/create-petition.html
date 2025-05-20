@@ -146,7 +146,7 @@
       const token = localStorage.getItem("heritage_token");
       if (!token) return alert("Trebuie să fii autentificat pentru a crea o petiție.");
 
-      const resUser = await fetch("http://localhost:5000/api/me", {
+      const resUser = await fetch("https://heritage-backend-p1hv.onrender.com/api/me", {
         headers: { Authorization: "Bearer " + token }
       });
       const user = await resUser.json();
@@ -158,7 +158,7 @@
         created_by_user_id: user.id
       };
 
-      const res = await fetch("http://localhost:5000/api/petitions", {
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/petitions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

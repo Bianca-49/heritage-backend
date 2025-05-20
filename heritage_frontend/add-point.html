@@ -228,7 +228,7 @@
         return;
       }
 
-      const userRes = await fetch("http://localhost:5000/api/me", {
+      const userRes = await fetch("https://heritage-backend-p1hv.onrender.com/api/me", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -254,7 +254,7 @@
         created_by_user_id: user.id
       };
 
-      const res = await fetch("http://localhost:5000/api/points", {
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/points", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

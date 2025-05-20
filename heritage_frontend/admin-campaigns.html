@@ -154,12 +154,12 @@
       const container = document.getElementById("campaignList");
       container.innerHTML = "Se încarcă...";
 
-      const res = await fetch("http://localhost:5000/api/donation-campaigns");
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/donation-campaigns");
       const campaigns = await res.json();
       container.innerHTML = "";
 
       for (let c of campaigns) {
-        const statsRes = await fetch(`http://localhost:5000/api/donations/${c.id}`);
+        const statsRes = await fetch(`https://heritage-backend-p1hv.onrender.com/api/donations/${c.id}`);
         const donations = await statsRes.json();
 
         const total = donations.reduce((sum, d) => sum + parseFloat(d.amount), 0);
@@ -186,7 +186,7 @@
         // Delete logic
         div.querySelector(".delete-btn").onclick = async () => {
           if (confirm("Ești sigur că vrei să ștergi această campanie?")) {
-            const resp = await fetch(`http://localhost:5000/api/admin/donations/${c.id}`, {
+            const resp = await fetch(`https://heritage-backend-p1hv.onrender.com/api/donations/${c.id}`, {
               method: "DELETE",
               headers: { Authorization: "Bearer " + token }
             });
@@ -212,7 +212,7 @@
           const title = form.title.value.trim();
           const description = form.description.value.trim();
 
-          const res = await fetch(`http://localhost:5000/api/admin/donations/${c.id}`, {
+          const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/donations/${c.id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",

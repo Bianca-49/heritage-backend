@@ -192,7 +192,7 @@
     section.style.display = "block";
 
     try {
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/users", {
         headers: { Authorization: "Bearer " + token }
       });
 
@@ -222,7 +222,7 @@
     if (!confirm("Ești sigur că vrei să ștergi acest utilizator?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token }
       });

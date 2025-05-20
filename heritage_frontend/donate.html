@@ -178,7 +178,7 @@
     const campaignId = new URLSearchParams(window.location.search).get("campaign");
 
     async function loadCampaign() {
-      const res = await fetch("http://localhost:5000/api/donation-campaigns");
+      const res = await fetch("https://heritage-backend-p1hv.onrender.com/api/donation-campaigns");
       const data = await res.json();
       const campaign = data.find(c => c.id == campaignId);
 
@@ -201,7 +201,7 @@
         return alert("Introduceți o sumă validă.");
       }
 
-      const res = await fetch(`http://localhost:5000/api/donations/${campaignId}`, {
+      const res = await fetch(`https://heritage-backend-p1hv.onrender.com/api/donations/${campaignId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
