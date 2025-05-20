@@ -164,7 +164,7 @@
     window.logout = function () {
       localStorage.removeItem("heritage_token");
       alert("Ai fost delogat!");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     };
 
     const params = new URLSearchParams(window.location.search);
@@ -203,7 +203,7 @@
       .catch(err => {
         console.error(err);
         alert("Te rugăm să te reconectezi.");
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       });
     }
   </script>

@@ -75,7 +75,7 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
     const { token } = req.user;
-    res.redirect(`http://localhost:5500/map.html?token=${token}`);
+    res.redirect(`https://gilded-gnome-4e9c2e.netlify.app/index.html?token=${token}`);
   }
 );
 
